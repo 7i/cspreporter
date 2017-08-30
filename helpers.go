@@ -35,7 +35,8 @@ type zipInfo struct {
 	Size     string
 }
 
-// getZipList returns a list of all .zip files in the globalConfig.ZipsDir directory that start with the prefix domain
+// getZipList returns a list of all .zip files in the globalConfig.ZipsDir
+// directory that start with the prefix domain
 func getZipList(domain string) (list []zipInfo, err error) {
 	files, err := ioutil.ReadDir(globalConfig.ZipsDir)
 	if err != nil {
@@ -43,7 +44,8 @@ func getZipList(domain string) (list []zipInfo, err error) {
 	}
 
 	for _, file := range files {
-		// Only list files that has .zip extention and start with the specified domain name.
+		// Only list files that has .zip extention and start with the specified
+		// domain name.
 		if filepath.Ext(file.Name()) == ".zip" && strings.HasPrefix(file.Name(), domain) {
 			list = append(list, zipInfo{FileName: file.Name(), Size: readableSize(file.Size())})
 		}

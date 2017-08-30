@@ -33,7 +33,8 @@ type domainPageServer struct {
 	Name string
 }
 
-// newDomainPageServer returns a domainPageServer that uses domain.tmpl and name as domainPageServer.Name
+// newDomainPageServer returns a domainPageServer that uses domain.tmpl and
+// name as domainPageServer.Name
 func newDomainPageServer(name string) (srv *domainPageServer, err error) {
 	srv = new(domainPageServer)
 	srv.Page, err = template.ParseFiles(globalConfig.TemplateDir + "domain.tmpl")
@@ -78,7 +79,8 @@ func (srv *domainPageServer) ServeHTTP(w http.ResponseWriter, req *http.Request)
 	srv.Page.Execute(w, dp)
 }
 
-// getZipServer handles requests to /get/ and serves .zip files from the globalConfig.ZipPageURI directory
+// getZipServer handles requests to /get/ and serves .zip files from the
+// globalConfig.ZipPageURI directory
 func getZipServer(w http.ResponseWriter, req *http.Request) {
 
 	file := fileNameFromURL(req.URL.Path)
@@ -96,7 +98,8 @@ func getZipServer(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// DelZip handles requests to /del/ and deletes .zip files from the globalConfig.ZipPageURI directory
+// DelZip handles requests to /del/ and deletes .zip files from the
+// globalConfig.ZipPageURI directory
 func delZipServer(w http.ResponseWriter, req *http.Request) {
 	file := fileNameFromURL(req.URL.Path)
 

@@ -63,7 +63,8 @@ func (d *domain) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// resetFileNr resets d.fileNr every day at 00:00.
+// resetFileNr resets d.fileNr every day at 00:00 and flush all CSP reports if
+// no flush has happened in the last 30 days.
 // Note that resetFileNr will not return so call it in a new gorutine.
 func (d *domain) resetFileNr() {
 	newDay := time.Now().Add(time.Hour * 24).Truncate(time.Hour * 24)
@@ -80,7 +81,8 @@ func (d *domain) resetFileNr() {
 	}
 }
 
-// flush writes all csp reports related to d to the current .zip file, if no .zip file exsists then a new .zip file is created
+// flush writes all csp reports related to d to the current .zip file, if no
+// .zip file exsists then a new .zip file is created
 func (d *domain) flush() {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()

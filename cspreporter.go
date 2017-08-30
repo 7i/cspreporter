@@ -58,7 +58,8 @@ func main() {
 	log.Fatalln(http.ListenAndServe(globalConfig.ZipPageURI, nil))
 }
 
-// setup reads config from file conf, sets default values and verifies that critical config parameters exsist
+// setup reads config from file conf, sets default values and verifies that
+// critical config parameters exsist
 func setup() {
 	conf := flag.String("conf", "cspreporter.conf", "Path to the CSP Reporter config file.")
 	flag.Parse()
@@ -114,7 +115,8 @@ func setup() {
 		globalConfig.ZipsDir += "/"
 	}
 
-	// Populate globalCSPTemplate eather from defaultCSPTemplate or from the csp.tmpl file
+	// Populate globalCSPTemplate eather from defaultCSPTemplate or from the
+	// csp.tmpl file
 	defaultCSPTemplate := "default-src 'none'; script-src 'nonce-{{.}}; style-src 'none'; media-src 'none'; img-src 'self' data:; child-src 'none'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; font-src 'none'; connect-src 'none'; report-uri https://{{.}}/csp;"
 	csp, err := ioutil.ReadFile(globalConfig.TemplateDir + "csp.tmpl")
 	if err != nil {
