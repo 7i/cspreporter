@@ -113,22 +113,15 @@ func setup() {
 	if !strings.HasSuffix(globalConfig.ZipsDir, "/") {
 		globalConfig.ZipsDir += "/"
 	}
-	if globalConfig.ZipPageCSPDir != "" && !strings.HasSuffix(globalConfig.ZipPageCSPDir, "/") {
-		globalConfig.ZipPageCSPDir += "/"
-	}
 
 	// Populate globalCSPTemplate eather from defaultCSPTemplate or from the csp.tmpl file
-	defaultCSPTemplate := "default-src 'none'; script-src 'nonce-{{.}}; style-src 'none'; media-src 'none'; img-src 'self' data:; child-src 'none'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; font-src 'none'; connect-src 'none'; report-uri http://{{.}}/csp;"
-	if globalConfig.ZipPageCSPDir != "" {
-		csp, err := ioutil.ReadFile(globalConfig.ZipPageCSPDir + "csp.tmpl")
-		if err != nil {
-			globalCSPTemplate = template.Must(template.New("csp").Parse(defaultCSPTemplate))
-		}
-		cspTemplate := string(bytes.Replace(csp, []byte("\n"), []byte(" "), -1))
-		globalCSPTemplate = template.Must(template.New("csp").Parse(cspTemplate))
-	} else {
+	defaultCSPTemplate := "default-src 'none'; script-src 'nonce-{{.}}; style-src 'none'; media-src 'none'; img-src 'self' data:; child-src 'none'; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; font-src 'none'; connect-src 'none'; report-uri https://{{.}}/csp;"
+	csp, err := ioutil.ReadFile(globalConfig.TemplateDir + "csp.tmpl")
+	if err != nil {
 		globalCSPTemplate = template.Must(template.New("csp").Parse(defaultCSPTemplate))
 	}
+	cspTemplate := string(bytes.Replace(csp, []byte("\n"), []byte(" "), -1))
+	globalCSPTemplate = template.Must(template.New("csp").Parse(cspTemplate))
 
 	globalMainpageTemplate = template.Must(template.ParseFiles(globalConfig.TemplateDir + "index.tmpl"))
 }

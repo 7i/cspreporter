@@ -3,11 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"log/syslog"
-	"net"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -51,7 +49,9 @@ func reportSrv(w http.ResponseWriter, req *http.Request) {
 
 	d, ok := globalDomainMap[filepath.Base(u.Hostname())]
 	if ok {
-		fmt.Println(string(body), "\n", filepath.Base(u.Hostname()), "\n\n")
+		if !globalConfig.Silent {
+			fmt.Println(string(body), "\n", filepath.Base(u.Hostname()), "\n\n")
+		}
 		d.mutex.Lock()
 		if globalConfig.Syslog != "" {
 			go sendSyslogMessage(d.name, string(body))
@@ -59,9 +59,11 @@ func reportSrv(w http.ResponseWriter, req *http.Request) {
 		d.textInZip.Write(body)
 		d.textInZip.Write([]byte("\n"))
 		d.nr++
-		d.mutex.Unlock()
 		if d.nr > globalConfig.MaxReportsPerZip {
+			d.mutex.Unlock()
 			d.flush()
+		} else {
+			d.mutex.Unlock()
 		}
 	}
 }
@@ -69,9 +71,12 @@ func reportSrv(w http.ResponseWriter, req *http.Request) {
 func sendSyslogMessage(name, body string) {
 	sysLog, err := syslog.Dial(globalConfig.Transport, globalConfig.Syslog, syslog.LOG_WARNING|syslog.LOG_DAEMON, name)
 	if err != nil {
-		log.Println(err)
+		if !globalConfig.Silent {
+			log.Println(err)
+		}
+	} else {
+		fmt.Fprintf(sysLog, "CSP report from Domain "+name+" : "+body)
 	}
-	fmt.Fprintf(sysLog, "CSP report from Domain "+name+" : "+body)
 }
 
 func cspReportListener() {
@@ -88,33 +93,33 @@ func cspReportListener() {
 ///////////////////////////////////////////////////////////////////////////////
 ///Test Code///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-func testSyslogHandler(c net.Conn) {
-	defer c.Close()
-	buf := make([]byte, 4096)
-	fmt.Println("SYSLOG:")
-	for {
-		n, err := c.Read(buf)
-		if err != nil {
-			if err != io.EOF {
-				fmt.Println("read error:", err)
-			}
-			break
-		}
-		fmt.Println(string(buf[:n]))
-	}
-}
-
-func testSyslog() {
-	fmt.Println("Starting testSyslog")
-	ln, err := net.Listen("tcp", ":8282")
-	if err != nil {
-		log.Fatalln("cant start testSyslog")
-	}
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			continue
-		}
-		go testSyslogHandler(conn)
-	}
-}
+//func testSyslogHandler(c net.Conn) {
+//	defer c.Close()
+//	buf := make([]byte, 4096)
+//	fmt.Println("SYSLOG:")
+//	for {
+//		n, err := c.Read(buf)
+//		if err != nil {
+//			if err != io.EOF {
+//				fmt.Println("read error:", err)
+//			}
+//			break
+//		}
+//		fmt.Println(string(buf[:n]))
+//	}
+//}
+//
+//func testSyslog() {
+//	fmt.Println("Starting testSyslog")
+//	ln, err := net.Listen("tcp", ":8282")
+//	if err != nil {
+//		log.Fatalln("cant start testSyslog")
+//	}
+//	for {
+//		conn, err := ln.Accept()
+//		if err != nil {
+//			continue
+//		}
+//		go testSyslogHandler(conn)
+//	}
+//}
