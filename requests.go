@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 )
 
-// mainpageServer serves the all requests to /
+// mainpageServer serves all requests to /
 func mainpageServer(w http.ResponseWriter, req *http.Request) {
 	_, csp, err := getCSP()
 	if err != nil {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
@@ -55,12 +55,12 @@ type domainPage struct {
 func (srv *domainPageServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	zipList, err := getZipList(srv.Name)
 	if err != nil {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 	nonce, csp, err := getCSP()
 	if err != nil {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 	var dp domainPage
@@ -87,14 +87,14 @@ func getZipServer(w http.ResponseWriter, req *http.Request) {
 
 	ref, err := url.Parse(req.Referer())
 	if err != nil {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
 	if filepath.Ext(file) == ".zip" && ref.Host == globalConfig.ZipPageURI {
 		http.ServeFile(w, req, globalConfig.ZipsDir+file)
 	} else {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 	}
 }
 
@@ -105,14 +105,14 @@ func delZipServer(w http.ResponseWriter, req *http.Request) {
 
 	ref, err := url.Parse(req.Referer())
 	if err != nil {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
 	if filepath.Ext(file) == ".zip" && ref.Host == globalConfig.ZipPageURI {
 		os.Remove(globalConfig.ZipsDir + file)
-		http.Redirect(w, req, req.Referer(), 303)
+		http.Redirect(w, req, req.Referer(), http.StatusSeeOther)
 	} else {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 	}
 }

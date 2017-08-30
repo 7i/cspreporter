@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-type cSPReport struct {
+type cspReport struct {
 	R report `json:"csp-report"`
 }
 
@@ -37,7 +37,7 @@ func reportSrv(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		return // Skip if errors
 	}
-	var report cSPReport
+	var report cspReport
 	err = json.Unmarshal(body, &report)
 	if err != nil {
 		return // Skip if errors

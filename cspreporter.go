@@ -25,10 +25,12 @@ type configuration struct {
 	Silent           bool
 }
 
-var globalConfig configuration
-var globalMainpageTemplate *template.Template
-var globalCSPTemplate *template.Template
-var globalDomainMap map[string]*domain
+var (
+	globalConfig           configuration
+	globalMainpageTemplate *template.Template
+	globalCSPTemplate      *template.Template
+	globalDomainMap        map[string]*domain
+)
 
 func main() {
 	// setup sets global variables, applys configs and sets defaut values

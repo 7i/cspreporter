@@ -51,15 +51,15 @@ func newDomain(name string) *domain {
 func (d *domain) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	ref, err := url.Parse(req.Referer())
 	if err != nil {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
 	if ref.Host == globalConfig.ZipPageURI {
 		d.flush()
-		http.Redirect(w, req, req.Referer(), 303)
+		http.Redirect(w, req, req.Referer(), http.StatusSeeOther)
 	} else {
-		http.Error(w, "", 500)
+		http.Error(w, "", http.StatusInternalServerError)
 	}
 }
 
