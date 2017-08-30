@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CSP Rapporter</title>
+	</head>
+
+	<body>
+		<h1>
+			CSP Rapporter
+		</h1>
+		{{ range . }}<a href="/domain/{{.}}">{{.}}</a><br>{{ end }}
+	</body>
+</html>
