@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"log/syslog"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -69,7 +68,7 @@ func reportSrv(w http.ResponseWriter, req *http.Request) {
 }
 
 func sendSyslogMessage(name, body string) {
-	sysLog, err := syslog.Dial(globalConfig.Transport, globalConfig.Syslog, syslog.LOG_WARNING|syslog.LOG_DAEMON, name)
+	sysLog, err := Dial(globalConfig.Transport, globalConfig.Syslog, LOG_WARNING|LOG_DAEMON, name)
 	if err != nil {
 		if !globalConfig.Silent {
 			log.Println(err)
